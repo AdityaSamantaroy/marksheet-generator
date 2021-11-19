@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, flash, jsonify, redirect,
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import os
+import json
 
 # this file is a blueprint of our site
 
@@ -16,10 +17,11 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@views.route('/', methods=['GET', 'POST'])
+@views.route('/upload/responses/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         # check if the post request has the file part
+        print("working..")
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
@@ -33,5 +35,6 @@ def home():
             filename = secure_filename(file.filename)
             print('UPLOAD', UPLOAD_FOLDER, os.getcwd())
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-            return redirect(request.url)
-    return render_template("home.html")
+            
+            return json.dumps({"data": "file saved!"}) #redirect(request.url)
+    return "done"#render_template("client/public/index.html")
