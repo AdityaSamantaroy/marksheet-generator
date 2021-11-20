@@ -1,40 +1,78 @@
+import { React, useState } from "react";
 import "./App.css";
-const axios = require("axios");
+import UploadFileComponent from "./components/UploadFileComponent";
+import GenerateMarksheet from "./components/GenerateMarksheet.js";
+import GenConciseMarksheet from "./components/GenConciseMarksheet";
+import SendEmail from "./components/SendEmail";
 
 const baseUrl = "http://127.0.0.1:5000";
 
-function handleSubmitClick(event) {
-	event.preventDefault();
-	const formData = new FormData();
-	console.log(event.target[0]);
-	formData.append("file", event.target[0].files[0]);
-	console.log(formData);
-	axios
-		.post(`${baseUrl}/upload/responses/`, formData, {
-			headers: {
-				"Content-Type": "multipart/form-data",
-			},
-		})
-		.then((res) => {
-			console.log("SUCCESS!!");
-			console.log(res.data);
-			window.location = "/";
-		})
-		.catch(function () {
-			console.log("FAILURE!!");
-		});
-}
+export default function App() {
+	const [posMark, setPosMark] = useState(0);
+	const [negMark, setNegMark] = useState(0);
 
-function App() {
 	return (
-		<div className="App">
-			<h1>Upload new File</h1>
-			<form encType="multipart/form-data" onSubmit={handleSubmitClick}>
-				<input type="file" className="file" />
-				<input type="submit" value="Upload" />
-			</form>
-		</div>
+		<>
+			<UploadFileComponent
+				text="Upload master csv"
+				baseUrl={baseUrl}
+				endpoint="/upload/master/"
+			/>
+			<UploadFileComponent
+				text="Upload responses csv"
+				baseUrl={baseUrl}
+				endpoint="/upload/responses/"
+			/>
+			<div>
+				<h3>Enter marking scheme:</h3>
+				<div>
+					<label>
+						Correct answer:
+						<input
+							type="text"
+							value={posMark}
+							name="positive marks"
+							onChange={(e) => {
+								setPosMark(e.target.value);
+								console.log(e.target.value);
+							}}
+						/>
+					</label>
+				</div>
+				<div>
+					<label>
+						Wrong answer:
+						<input
+							type="text"
+							value={negMark}
+							name="negative marks"
+							onChange={(e) => setNegMark(e.target.value)}
+						/>
+					</label>
+				</div>
+			</div>
+
+			<div>
+				<h3>Get output:</h3>
+				<div>
+					<GenerateMarksheet
+						baseUrl={baseUrl}
+						endpoint={"/output/marksheet/"}
+						posMark={posMark}
+						negMark={negMark}
+					/>
+				</div>
+
+				<div>
+					<GenConciseMarksheet
+						baseUrl={baseUrl}
+						endpoint={"/output/concise-marksheet/"}
+					/>
+				</div>
+				<div>
+					<SendEmail baseUrl={baseUrl} endpoint={"/send-email/"} />
+				</div>
+			</div>
+		</>
 	);
 }
-
-export default App;
