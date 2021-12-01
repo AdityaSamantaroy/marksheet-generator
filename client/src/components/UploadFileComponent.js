@@ -1,4 +1,5 @@
 import React from "react";
+import Basic from "./Basic";
 const axios = require("axios");
 
 const handleSubmitClick = (event, url) => {
@@ -23,21 +24,12 @@ const handleSubmitClick = (event, url) => {
 		});
 };
 
-export default function UploadFileComponent({ baseUrl, endpoint, text }) {
+export default function UploadFileComponent({ baseUrl, endpoint }) {
 	const url = `${baseUrl}${endpoint}`;
 
 	return (
-		<div className="UploadFileComponent">
-			<div>
-				<h3>{text}</h3>
-			</div>
-			<form
-				encType="multipart/form-data"
-				onSubmit={(event) => handleSubmitClick(event, url)}
-			>
-				<input type="file" className="file" />
-				<input type="submit" value="Upload" />
-			</form>
+		<div className="flex m-2 items-center">
+			<Basic url={url} handleSubmitClick={handleSubmitClick} />
 		</div>
 	);
 }

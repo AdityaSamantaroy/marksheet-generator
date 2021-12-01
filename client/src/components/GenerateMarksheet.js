@@ -38,7 +38,7 @@ export default function GenerateMarksheet({
 	return (
 		<>
 			<button
-				className="genMarksheet"
+				className="flex items-center justify-center rounded bg-blue-400 text-white p-1 m-0.5"
 				onClick={(e) => handleButtonClick(e, url, markingData)}
 			>
 				Gennerte Roll Number wise marksheet

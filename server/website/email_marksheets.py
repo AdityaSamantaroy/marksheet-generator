@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from dotenv import load_dotenv
-from email_util import send_mail
+from .email_util import send_mail
 
 load_dotenv()
 
