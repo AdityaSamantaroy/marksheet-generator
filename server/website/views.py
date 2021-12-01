@@ -77,11 +77,14 @@ def responses():
 @views.route('/output/marksheet/', methods=['GET', 'POST'])
 @cross_origin()
 def marksheet():
+    global positive, negative
     if request.method == 'POST':
         content = request.json
-        positive = content['positive']['posMark']
-        negative = content['negative']['negMark']
-        print(positive, negative)
+        positive = float(content['positive']['posMark'])
+        negative = float(content['negative']['negMark'])
+        # print(positive, negative)
+        from .rollNoWise import driver
+        driver()
     return "done"
 
 
@@ -89,8 +92,8 @@ def marksheet():
 @cross_origin()
 def concise_marksheet():
     if request.method == 'GET':
-        print("I am working")
-        pass
+        from .concise import driver
+        driver()
     return "done"
 
 
@@ -100,5 +103,7 @@ def send_email():
 
     if request.method == 'GET':
         print("Sending Email.......")
+        from .email_marksheets import email_marksheets
+        email_marksheets()
 
     return "done"
