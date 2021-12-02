@@ -13,37 +13,29 @@ export default function App() {
 
 	return (
 		<div className="flex-auto items-center justify-center rounded p-2 m-0.5">
-			<h1 className="flex-auto text-5xl font-semibold my-3 mb-7">
-				Marksheet Generator
-			</h1>
+			<h1 className="h1-tag my-3 mb-7">Marksheet Generator</h1>
 			<div>
-				<h3 className="flex-auto text-2xl font-semibold">
-					Upload master csv:
-				</h3>
+				<h3 className="h3-tag">Upload master csv:</h3>
 				<UploadFileComponent
 					baseUrl={baseUrl}
 					endpoint="/upload/master/"
 				/>
 			</div>
 			<div>
-				<h3 className="flex-auto text-2xl font-semibold">
-					Upload responses csv:
-				</h3>
+				<h3 className="h3-tag">Upload responses csv:</h3>
 				<UploadFileComponent
 					baseUrl={baseUrl}
 					endpoint="/upload/responses/"
 				/>
 			</div>
 			<div>
-				<h3 className="flex-auto text-2xl font-semibold">
-					Enter marking scheme:
-				</h3>
+				<h3 className="h3-tag">Enter marking scheme:</h3>
 				<div className="flex m-2 items-center">
 					<div>
 						<label>
 							Correct answer:
 							<input
-								className="flex justify-center rounded-md border border-gray-300"
+								className="classic-input"
 								type="text"
 								value={posMark}
 								name="positive marks"
@@ -58,7 +50,7 @@ export default function App() {
 						<label>
 							Wrong answer:
 							<input
-								className="flex justify-center rounded-md border border-gray-300"
+								className="classic-input"
 								type="text"
 								value={negMark}
 								name="negative marks"
@@ -70,9 +62,7 @@ export default function App() {
 			</div>
 
 			<div>
-				<h3 className="flex-auto text-2xl font-semibold">
-					Get output:
-				</h3>
+				<h3 className="h3-tag">Get output:</h3>
 				<div className="flex m-2 items-center">
 					<div>
 						<GenerateMarksheet

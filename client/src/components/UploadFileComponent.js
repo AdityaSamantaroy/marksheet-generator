@@ -2,13 +2,15 @@ import React from "react";
 import Basic from "./Basic";
 const axios = require("axios");
 
-const handleSubmitClick = (event, url) => {
+const handleSubmitClick = (event, url, reqFile) => {
 	event.preventDefault();
 
 	const formData = new FormData();
-	console.log(event.target[0]);
-	formData.append("file", event.target[0].files[0]);
-	console.log(formData);
+	console.log(reqFile);
+	// console.log(event.target[0].files);
+	// console.log(event.target[0].files[0]);
+	formData.append("file", reqFile);
+	// console.log(formData);
 	axios
 		.post(url, formData, {
 			headers: {

@@ -1,12 +1,22 @@
 import pandas as pd
-import os
-from dotenv import load_dotenv
 from .email_util import send_mail
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+from email.mime.text import MIMEText
+import smtplib
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 load_dotenv()
 
 SMTP_USERNAME = os.getenv('SMTP_USERNAME')
 SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')
+print(SMTP_USERNAME, SMTP_PASSWORD)
+
 MSG_BODY = """Dear Student, 
 
 CS384 2021 Quiz 2 marks are attached for reference.
@@ -28,6 +38,22 @@ def email_marksheets():
     responses_df.set_index(['Roll Number'], inplace=True)
     print("df loaded.")
 
+    print("initiating server...")
+    # Create SMTP object
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.ehlo()
+        server.starttls()
+        print("server running.")
+    except:
+        print("Error! Couldnt start server.")
+    # Login to the server
+    try:
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        print("login successful.")
+    except:
+        print("Error! Couldnt Login.", SMTP_USERNAME, SMTP_PASSWORD)
+        
     print(os.listdir(OUTPUT_DIR))
     for filename in os.listdir(OUTPUT_DIR):
         if not filename.endswith(".xlsx"):
@@ -35,10 +61,10 @@ def email_marksheets():
         FILEPATH = OUTPUT_DIR + filename
         RECEIVER = responses_df.loc[filename.split('.')[0]]['Email address']
 
-        print(RECEIVER, SUBJECT)
+        print("receiver:", RECEIVER)
 
-        send_mail(MSG_BODY, SUBJECT, SENDER, RECEIVER, FILEPATH,
-                  filename, SMTP_USERNAME, SMTP_PASSWORD)
-
-
-email_marksheets()
+        send_mail(server, MSG_BODY, SUBJECT, SENDER, RECEIVER, FILEPATH,
+                  filename)
+                  
+    server.close()
+    print("Server closed.")

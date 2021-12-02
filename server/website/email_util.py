@@ -4,9 +4,9 @@ from email.mime.text import MIMEText
 import smtplib
 
 
-def send_mail(MESSAGE_BODY, EMAIL_SUBJECT, EMAIL_FROM, EMAIL_TO, PATH_TO_CSV_FILE, FILE_NAME, SMTP_USERNAME, SMTP_PASSWORD):
+def send_mail(server, MESSAGE_BODY, EMAIL_SUBJECT, EMAIL_FROM, EMAIL_TO, PATH_TO_CSV_FILE, FILE_NAME):
     # Create a multipart message
-    print("HELLo World")
+    print("Initiating msg...")
     msg = MIMEMultipart()
     body_part = MIMEText(MESSAGE_BODY, 'plain')
     msg['Subject'] = EMAIL_SUBJECT
@@ -19,29 +19,16 @@ def send_mail(MESSAGE_BODY, EMAIL_SUBJECT, EMAIL_FROM, EMAIL_TO, PATH_TO_CSV_FIL
         # Attach the file with filename to the email
         msg.attach(MIMEApplication(file.read(), Name=FILE_NAME))
 
-    try:
-        # Create SMTP object
-        try:
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.ehlo()
-            server.starttls()
-        except:
-            print("Error! Couldnt start server.")
-        # Login to the server
-        try:
-            server.login(SMTP_USERNAME, SMTP_PASSWORD)
-        except:
-            print("Error! Couldnt Login.", SMTP_USERNAME, SMTP_PASSWORD)
+    # try:
         # Convert the message to a string and send it
-        try:
-            server.sendmail(msg['From'], msg['To'], msg.as_string())
-        except:
-            print("Error! Couldnt send message.")
-
+    try:
+        server.sendmail(msg['From'], msg['To'], msg.as_string())
         print("msg sent successfully!")
-        server.close()
-        # server.quit()
     except:
-        print("Erorr! Msg not sent.")
+        print("Error! Couldnt send message.")
+
+        # server.quit()
+    # except:
+    #     print("Erorr! Msg not sent.")
 
     return
