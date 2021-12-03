@@ -6,6 +6,7 @@ from openpyxl.styles import colors
 from openpyxl.styles import Font, Color
 import openpyxl
 from .validate import check
+from subprocess import run
 
 BASE_PATH = os.path.dirname(
     os.path.realpath(__file__))
@@ -170,6 +171,8 @@ def driver():
     get_answer()
     generate_marksheet()
     generate_marksheet_for_absentees()
+    
+    run(f'rm {OUTPUT_FILE_PATH}/placeholder.txt', shell=True)
 
     with open(BASE_PATH + "/stud_info.json", "w") as outfile:
         json.dump(stud_info, outfile)

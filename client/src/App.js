@@ -1,15 +1,21 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 // import "./App.css";
 import UploadFileComponent from "./components/UploadFileComponent";
 import GenerateMarksheet from "./components/GenerateMarksheet.js";
 import GenConciseMarksheet from "./components/GenConciseMarksheet";
 import SendEmail from "./components/SendEmail";
-
+import axios from "axios";
 const baseUrl = "http://127.0.0.1:5000";
 
 export default function App() {
 	const [posMark, setPosMark] = useState(0);
 	const [negMark, setNegMark] = useState(0);
+
+	useEffect(() => {
+		axios.get(`${baseUrl}/deleteResidualOutput`).then((res) => {
+			console.log(res.data);
+		});
+	}, []);
 
 	return (
 		<div className="flex-auto items-center justify-center rounded p-2 m-0.5">

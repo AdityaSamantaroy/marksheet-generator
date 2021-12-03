@@ -1,7 +1,7 @@
 import json
 import os
 import pandas as pd
-
+from subprocess import run
 
 BASE_PATH = os.path.dirname(
     os.path.realpath(__file__))
@@ -86,6 +86,9 @@ def generate_absentees():
 def driver():
     generate_concise()
     generate_absentees()
+    
+    OUTPUT_CONC_DIR = BASE_PATH + "/output/concise"
+    run(f'rm {OUTPUT_CONC_DIR}/placeholder.txt', shell=True)
 
 
 # driver()

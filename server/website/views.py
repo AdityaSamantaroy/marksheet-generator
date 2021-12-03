@@ -6,15 +6,17 @@ import os
 import json
 from flask_cors import cross_origin
 # this file is a blueprint of our site
-from subprocess import call
+from subprocess import run
 
 negative = 0
 positive = 0
-is_responses_uploaded = False
-is_master_uploaded = False
+# is_responses_uploaded = False
+# is_master_uploaded = False
 
 views = Blueprint('views', __name__)
 UPLOAD_FOLDER = os.getcwd() + '/website/uploads/csv'
+OUTPUT_DIR = os.getcwd() + '/website/output/rollNumberWise'
+OUTPUT_CONC_DIR = os.getcwd() + '/website/output/concise'
 ALLOWED_EXTENSIONS = {'csv'}
 
 
@@ -23,6 +25,26 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # validate rem
+
+
+@views.route('/deleteResidualOutput', methods=['GET'])
+@cross_origin()
+def delete_residual():
+    if request.method == 'GET':
+        try:
+            run(f'rm -rf {OUTPUT_DIR}/*', shell=True)
+            run(['touch', str(OUTPUT_DIR+"/placeholder.txt")])
+            
+            run(f'rm -rf {OUTPUT_CONC_DIR}/*', shell=True)
+            run(['touch', str(OUTPUT_CONC_DIR+"/placeholder.txt")])
+            
+            run(f'rm -rf {UPLOAD_FOLDER}/*', shell=True)
+            run(['touch', str(UPLOAD_FOLDER+"/placeholder.txt")])
+            return json.dumps({'Success': "Residual files deleted."})
+        except Exception as e:
+            return json.dumps({'Error:': str(e)})
+            
+    return "done"
 
 
 @views.route('/upload/master/', methods=['GET', 'POST'])
@@ -51,10 +73,12 @@ def master():
             filename = "master.csv"
             print('UPLOAD', UPLOAD_FOLDER, os.getcwd())
             file.save(os.path.join(UPLOAD_FOLDER, filename))
+            # is_master_uploaded = True
             return json.dumps({"Success": "file uploaded!"})  # redirect(request.url)
             
         except Exception as e:
-            return json.dumps({"Error": e})
+            return json.dumps({"Error": str(e)})
+            
     return "done"  # render_template("client/public/index.html")
 
 
@@ -85,10 +109,12 @@ def responses():
             filename = "responses.csv"
             print('UPLOAD', UPLOAD_FOLDER, os.getcwd())
             file.save(os.path.join(UPLOAD_FOLDER, filename))
+            # is_responses_uploaded = True
             return json.dumps({"Success": "file uploaded!"})  # redirect(request.url)
             
         except Exception as e:
-            return json.dumps({"Error": e})
+            return json.dumps({"Error": str(e)})
+            
     return "done"  # render_template("client/public/index.html")
 
 
@@ -98,6 +124,9 @@ def marksheet():
     global positive, negative
     if request.method == 'POST':
         try:
+            # operation validations
+            if not os.path.exists(UPLOAD_FOLDER+'/master.csv') or not os.path.exists(UPLOAD_FOLDER+'/responses.csv'):
+                raise Exception("Files not uploaded. Cant generate marksheets ")
             content = request.json
             positive = float(content['positive']['posMark'])
             negative = float(content['negative']['negMark'])
@@ -107,7 +136,7 @@ def marksheet():
             return json.dumps({"Success": "marksheets generated!"})  # redirect(request.url)
             
         except Exception as e:
-            return json.dumps({"Error": e})
+            return json.dumps({"Error": str(e)})
         
     return "done"
 
@@ -117,12 +146,17 @@ def marksheet():
 def concise_marksheet():
     if request.method == 'GET':
         try:
+            # operation validations
+            if not os.path.exists(UPLOAD_FOLDER+'/master.csv') or not os.path.exists(UPLOAD_FOLDER+'/responses.csv'):
+                raise Exception("Files not uploaded. Can't do any operations. ")
+            if os.path.exists(OUTPUT_DIR+'/placeholder.txt'):
+                raise Exception("Marksheets have not been generated. Can't generate concise marksheet. ")
             from .concise import driver
             driver()
-            return json.dumps({"Success": "file uploaded!"})  # redirect(request.url)
+            return json.dumps({"Success": "concise generated!"})  # redirect(request.url)
                 
         except Exception as e:
-            return json.dumps({"Error": e})
+            return json.dumps({"Error": str(e)})
         
     return "done"
 
@@ -132,12 +166,17 @@ def concise_marksheet():
 def send_email():
     if request.method == 'GET':
         try:
+            # operation validations
+            if not os.path.exists(UPLOAD_FOLDER+'/master.csv') or not os.path.exists(UPLOAD_FOLDER+'/responses.csv'):
+                raise Exception("Files not uploaded. Can't do any operations. ")
+            if os.path.exists(OUTPUT_DIR+'/placeholder.txt'):
+                raise Exception("Marksheets have not been generated. Can't send emails. ")
             print("Sending Email.......")
             from .email_marksheets import email_marksheets
             email_marksheets()
             return json.dumps({"Success": "emails sent!"})  # redirect(request.url)
             
         except Exception as e:
-            return json.dumps({"Error": e})
+            return json.dumps({"Error": str(e)})
 
     return "done"
