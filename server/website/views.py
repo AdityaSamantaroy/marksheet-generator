@@ -10,6 +10,8 @@ from subprocess import call
 
 negative = 0
 positive = 0
+is_responses_uploaded = False
+is_master_uploaded = False
 
 views = Blueprint('views', __name__)
 UPLOAD_FOLDER = os.getcwd() + '/website/uploads/csv'
@@ -27,24 +29,32 @@ def allowed_file(filename):
 @cross_origin()
 def master():
     if request.method == 'POST':
-        # check if the post request has the file part
-        print("working..")
-        if 'file' not in request.files:
-            print('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            print('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
+        try:
+            print("working..")
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                print('No file part')
+                raise Exception("Error! No file part found.")
+                
+            file = request.files['file']
+            # If the user does not select a file, the browser submits an
+            # empty file without a filename.
+            if not file or file.filename == '':
+                print('No selected file')
+                raise Exception("Error! No selected file.")
+                
+            if not allowed_file(file.filename):
+                print('not allowed')
+                raise Exception("Error! File not allowed.")
+                
             # filename = secure_filename(file.filename)
             filename = "master.csv"
             print('UPLOAD', UPLOAD_FOLDER, os.getcwd())
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-
-            return json.dumps({"data": "file saved!"})  # redirect(request.url)
+            return json.dumps({"Success": "file uploaded!"})  # redirect(request.url)
+            
+        except Exception as e:
+            return json.dumps({"Error": e})
     return "done"  # render_template("client/public/index.html")
 
 
@@ -53,24 +63,32 @@ def master():
 @cross_origin()
 def responses():
     if request.method == 'POST':
-        # check if the post request has the file part
-        print("working..")
-        if 'file' not in request.files:
-            print('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            print('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
+        try:
+            print("working..")
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                print('No file part')
+                raise Exception("Error! No file part found.")
+                
+            file = request.files['file']
+            # If the user does not select a file, the browser submits an
+            # empty file without a filename.
+            if not file or file.filename == '':
+                print('No selected file')
+                raise Exception("Error! No selected file.")
+                
+            if not allowed_file(file.filename):
+                print('not allowed')
+                raise Exception("Error! File not allowed.")
+                
             # filename = secure_filename(file.filename)
             filename = "responses.csv"
             print('UPLOAD', UPLOAD_FOLDER, os.getcwd())
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-            # print(request)
-            return json.dumps({"data": "file saved!"})  # redirect(request.url)
+            return json.dumps({"Success": "file uploaded!"})  # redirect(request.url)
+            
+        except Exception as e:
+            return json.dumps({"Error": e})
     return "done"  # render_template("client/public/index.html")
 
 
@@ -79,12 +97,18 @@ def responses():
 def marksheet():
     global positive, negative
     if request.method == 'POST':
-        content = request.json
-        positive = float(content['positive']['posMark'])
-        negative = float(content['negative']['negMark'])
-        # print(positive, negative)
-        from .rollNoWise import driver
-        driver()
+        try:
+            content = request.json
+            positive = float(content['positive']['posMark'])
+            negative = float(content['negative']['negMark'])
+            # print(positive, negative)
+            from .rollNoWise import driver
+            driver()
+            return json.dumps({"Success": "marksheets generated!"})  # redirect(request.url)
+            
+        except Exception as e:
+            return json.dumps({"Error": e})
+        
     return "done"
 
 
@@ -92,18 +116,28 @@ def marksheet():
 @cross_origin()
 def concise_marksheet():
     if request.method == 'GET':
-        from .concise import driver
-        driver()
+        try:
+            from .concise import driver
+            driver()
+            return json.dumps({"Success": "file uploaded!"})  # redirect(request.url)
+                
+        except Exception as e:
+            return json.dumps({"Error": e})
+        
     return "done"
 
 
 @views.route('/send-email/', methods=['GET', 'POST'])
 @cross_origin()
 def send_email():
-
     if request.method == 'GET':
-        print("Sending Email.......")
-        from .email_marksheets import email_marksheets
-        email_marksheets()
+        try:
+            print("Sending Email.......")
+            from .email_marksheets import email_marksheets
+            email_marksheets()
+            return json.dumps({"Success": "emails sent!"})  # redirect(request.url)
+            
+        except Exception as e:
+            return json.dumps({"Error": e})
 
     return "done"

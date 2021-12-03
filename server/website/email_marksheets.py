@@ -34,37 +34,50 @@ RESPONSE_FILE = BASE_PATH + "/uploads/csv/responses.csv"
 
 def email_marksheets():
     print(OUTPUT_DIR)
-    responses_df = pd.read_csv(RESPONSE_FILE)
-    responses_df.set_index(['Roll Number'], inplace=True)
-    print("df loaded.")
+    try:
+        responses_df = pd.read_csv(RESPONSE_FILE)
+        responses_df.set_index(['Roll Number'], inplace=True)
+        print("df loaded.")
+    except Exception as e:
+        raise Exception("Couldn't load data required for sending emails: ") from e
+        return
 
-    print("initiating server...")
     # Create SMTP object
+    print("initiating server...")
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.ehlo()
         server.starttls()
         print("server running.")
-    except:
-        print("Error! Couldnt start server.")
+    except Exception as e:
+        raise Exception("Couldnt start server: ") from e
+        return
     # Login to the server
     try:
         server.login(SMTP_USERNAME, SMTP_PASSWORD)
         print("login successful.")
     except:
-        print("Error! Couldnt Login.", SMTP_USERNAME, SMTP_PASSWORD)
+        # print(SMTP_USERNAME, SMTP_PASSWORD)
+        raise Exception("Couldnt Login: ") from e
+        return
+      
+    try:  
+        print(os.listdir(OUTPUT_DIR))
+        for filename in os.listdir(OUTPUT_DIR):
+            if not filename.endswith(".xlsx"):
+                continue
+            FILEPATH = OUTPUT_DIR + filename
+            RECEIVER = responses_df.loc[filename.split('.')[0]]['Email address']
+
+            print("receiver:", RECEIVER)
+
+            send_mail(server, MSG_BODY, SUBJECT, SENDER, RECEIVER, FILEPATH,
+                    filename)
+                    
+        server.close()
+        print("Server closed.")
+    except Exception as e:
+        raise Exception("Couldnt send emails: ") from e
+        return
         
-    print(os.listdir(OUTPUT_DIR))
-    for filename in os.listdir(OUTPUT_DIR):
-        if not filename.endswith(".xlsx"):
-            continue
-        FILEPATH = OUTPUT_DIR + filename
-        RECEIVER = responses_df.loc[filename.split('.')[0]]['Email address']
-
-        print("receiver:", RECEIVER)
-
-        send_mail(server, MSG_BODY, SUBJECT, SENDER, RECEIVER, FILEPATH,
-                  filename)
-                  
-    server.close()
-    print("Server closed.")
+    return
