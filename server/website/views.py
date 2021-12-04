@@ -40,7 +40,7 @@ def delete_residual():
             
             run(f'rm -rf {UPLOAD_FOLDER}/*', shell=True)
             run(['touch', str(UPLOAD_FOLDER+"/placeholder.txt")])
-            return json.dumps({'Success': "Residual files deleted."})
+            return json.dumps({"Success": "Residual files deleted."})
         except Exception as e:
             return json.dumps({'Error:': str(e)})
             

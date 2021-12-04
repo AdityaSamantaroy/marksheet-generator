@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 
-const handleButtonClick = (event, url, data) => {
+const handleButtonClick = (event, url, data, alert) => {
 	event.preventDefault();
 
 	axios
@@ -13,6 +13,15 @@ const handleButtonClick = (event, url, data) => {
 		.then((res) => {
 			console.log("SUCCESS generating marksheet !!");
 			console.log(res.data);
+			if ("Success" in res.data) {
+				alert.success(res.data["Success"]);
+			}
+			if ("Info" in res.data) {
+				alert.show(res.data["Info"]);
+			}
+			if ("Error" in res.data) {
+				alert.error(res.data["Error"]);
+			}
 		})
 		.catch(function () {
 			console.log("FAILURE generating marksheet !!");
@@ -24,6 +33,7 @@ export default function GenerateMarksheet({
 	endpoint,
 	posMark,
 	negMark,
+	alert,
 }) {
 	const url = `${baseUrl}${endpoint}`;
 	const markingData = {
@@ -39,9 +49,9 @@ export default function GenerateMarksheet({
 		<>
 			<button
 				className="btn-blue"
-				onClick={(e) => handleButtonClick(e, url, markingData)}
+				onClick={(e) => handleButtonClick(e, url, markingData, alert)}
 			>
-				Gennerte Roll Number wise marksheet
+				Generate Roll Number wise marksheet
 			</button>
 		</>
 	);

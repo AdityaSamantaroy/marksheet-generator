@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-export default function Basic({ url, handleSubmitClick }) {
+export default function Basic({ url, handleSubmitClick, alert }) {
 	const [reqFile, setReqFile] = useState(null);
 	const onDrop = useCallback((acceptedFiles) => {
 		// console.log(acceptedFiles);
@@ -31,7 +31,9 @@ export default function Basic({ url, handleSubmitClick }) {
 		<div className="w-1/2">
 			<form
 				encType="multipart/form-data"
-				onSubmit={(event) => handleSubmitClick(event, url, reqFile)}
+				onSubmit={(event) =>
+					handleSubmitClick(event, url, reqFile, alert)
+				}
 			>
 				<div
 					{...getRootProps({

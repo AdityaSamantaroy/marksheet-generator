@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DarkModeToggle from "react-dark-mode-toggle";
 
-export default function DarkMode() {
+export default function DarkMode({ alert }) {
 	const [isDarkMode, setIsDarkMode] = useState(() => false);
 
 	useEffect(() => {
@@ -12,9 +12,11 @@ export default function DarkMode() {
 				window.matchMedia("(prefers-color-scheme: dark)").matches)
 		) {
 			document.documentElement.className = "light";
+			alert.show("Welcome to the Light side!");
 			console.log("light");
 		} else {
 			document.documentElement.className = "dark";
+			alert.show("Join the Dark side!");
 			console.log("dark");
 		}
 

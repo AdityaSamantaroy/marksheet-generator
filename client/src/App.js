@@ -5,6 +5,7 @@ import GenerateMarksheet from "./components/GenerateMarksheet.js";
 import GenConciseMarksheet from "./components/GenConciseMarksheet";
 import SendEmail from "./components/SendEmail";
 import DarkMode from "./components/DarkMode";
+import { useAlert } from "react-alert";
 import axios from "axios";
 const baseUrl = "http://127.0.0.1:5000";
 
@@ -30,6 +31,8 @@ export default function App() {
 		});
 	}, []);
 
+	const alert = useAlert();
+
 	return (
 		<div className="transition duration-500 ease-in-out bg-white dark:bg-gray-800 dark:text-white h-screen flex flex-grow">
 			<div className="flex-auto items-center justify-center rounded p-2 m-0.5">
@@ -38,7 +41,7 @@ export default function App() {
 						Marksheet Generator
 					</h1>
 					<div>
-						<DarkMode />
+						<DarkMode alert={alert} />
 					</div>
 				</div>
 				<div className="container ">
@@ -47,6 +50,7 @@ export default function App() {
 						<UploadFileComponent
 							baseUrl={baseUrl}
 							endpoint="/upload/master/"
+							alert={alert}
 						/>
 					</div>
 					<div>
@@ -54,6 +58,7 @@ export default function App() {
 						<UploadFileComponent
 							baseUrl={baseUrl}
 							endpoint="/upload/responses/"
+							alert={alert}
 						/>
 					</div>
 					<div>
@@ -100,6 +105,7 @@ export default function App() {
 									endpoint={"/output/marksheet/"}
 									posMark={posMark}
 									negMark={negMark}
+									alert={alert}
 								/>
 							</div>
 
@@ -107,12 +113,14 @@ export default function App() {
 								<GenConciseMarksheet
 									baseUrl={baseUrl}
 									endpoint={"/output/concise-marksheet/"}
+									alert={alert}
 								/>
 							</div>
 							<div>
 								<SendEmail
 									baseUrl={baseUrl}
 									endpoint={"/send-email/"}
+									alert={alert}
 								/>
 							</div>
 						</div>
